@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Teacher Dashboard</title>
+    <style>
+        :root {
+            --ink: #16313e;
+            --panel: #ffffff;
+            --line: #d6e2e0;
+            --ok-bg: #e8f8ee;
+            --ok-ink: #1f7d43;
+            --err-bg: #ffe8e8;
+            --err-ink: #9b1f1f;
+            --accent: #0e8c7a;
+            --soft: #eef7f5;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--ink);
+            background: linear-gradient(165deg, #edf5f4, #f7fbfd);
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            background: #16313e;
+            color: #fff;
+        }
+
+        .top a {
+            color: #fff;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.5);
+            padding: 8px 12px;
+            border-radius: 9px;
+        }
+
+        .wrap {
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1.12fr 1fr;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(16, 56, 63, 0.08);
+        }
+
+        h2 { margin-top: 0; }
+
+        .msg {
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+        }
+
+        .ok { background: var(--ok-bg); color: var(--ok-ink); }
+        .err { background: var(--err-bg); color: var(--err-ink); }
+
+        .hint {
+            margin: 0 0 12px;
+            font-size: 0.9rem;
+            color: #406370;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.88rem;
+            margin: 6px 0 4px;
+            font-weight: 700;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            padding: 10px;
+            font-size: 0.92rem;
+            background: #fff;
+        }
+
+        .subject-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .subject-table th, .subject-table td {
+            border: 1px solid var(--line);
+            padding: 8px;
+            vertical-align: top;
+        }
+
+        .subject-table th {
+            background: #f2f8f7;
+            text-align: left;
+        }
+
+        .btn-row {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: 0;
+            border-radius: 9px;
+            padding: 11px 14px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .add-btn { background: #e7f4f1; color: #175148; }
+        .save-btn { background: var(--accent); color: #fff; }
+
+        .student {
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #fbfdfc;
+        }
+
+        .student h4 {
+            margin: 0 0 4px;
+        }
+
+        .meta {
+            font-size: 0.85rem;
+            color: #3a5c67;
+            margin-top: 6px;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .chip {
+            padding: 6px 10px;
+            background: var(--soft);
+            border-radius: 999px;
+            font-size: 0.83rem;
+        }
+
+        @media (max-width: 980px) {
+            .wrap { grid-template-columns: 1fr; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header class="top">
+    <h3>Teacher Dashboard</h3>
+    <a href="/logout">Logout</a>
+</header>
+
+<main class="wrap">
+    <section class="card">
+        <h2>Add / Update Student Results</h2>
+
+        <p class="hint">Teacher-only controls: choose a registered student, set course + syllabus, and select subjects from that course.</p>
+
+        <p th:if="${success != null and !#strings.isEmpty(success)}" class="msg ok" th:text="${success}"></p>
+        <p th:if="${error != null and !#strings.isEmpty(error)}" class="msg err" th:text="${error}"></p>
+
+        <form method="post" action="/teacher/students/results" id="results-form">
+            <div class="grid">
+                <div>
+                    <label for="studentId">Registered Student</label>
+                    <select id="studentId" name="studentId" required>
+                        <option value="">Select student</option>
+                        <option th:each="student : ${students}"
+                                th:value="${student.id}"
+                                th:data-course="${student.course}"
+                                th:data-syllabus="${student.syllabus}"
+                                th:text="${student.name + ' (' + (student.user != null ? student.user.email : student.legacyEmail) + ')'}"></option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="course">Course / Department</label>
+                    <select id="course" name="course" required>
+                        <option value="">Select course</option>
+                        <option th:each="courseName : ${courses}" th:value="${courseName}" th:text="${courseName}"></option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="syllabus">Syllabus</label>
+                    <select id="syllabus" name="syllabus" required>
+                        <option value="">Select syllabus</option>
+                    </select>
+                </div>
+            </div>
+
+            <table class="subject-table" id="subjects-table">
+                <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Marks (0-100)</th>
+                    <th>Remark</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <div class="btn-row">
+                <button class="add-btn" type="button" onclick="addRow()">Add Subject Row</button>
+                <button class="save-btn" type="submit">Save Results</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>Registered Students</h2>
+        <div th:if="${#lists.isEmpty(students)}">No students registered yet.</div>
+
+        <div class="student" th:each="student : ${students}">
+            <h4 th:text="${student.name}"></h4>
+            <div th:text="${student.user != null ? student.user.email : student.legacyEmail}"></div>
+            <div class="meta" th:text="${'Course: ' + (#strings.isEmpty(student.course) ? 'Not set' : student.course)}"></div>
+            <div class="meta" th:text="${'Syllabus: ' + (#strings.isEmpty(student.syllabus) ? 'Not set' : student.syllabus)}"></div>
+
+            <div class="chips">
+                <span class="chip" th:if="${#lists.isEmpty(student.results)}">No results yet</span>
+                <span class="chip" th:each="result : ${student.results}" th:text="${result.subject + ' - ' + result.marks + '/100'}"></span>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script th:inline="javascript">
+    const courseSubjects = /*[[${courseSubjects}]]*/ {};
+    const courseSyllabi = /*[[${courseSyllabi}]]*/ {};
+
+    const courseSelect = document.getElementById('course');
+    const syllabusSelect = document.getElementById('syllabus');
+    const studentSelect = document.getElementById('studentId');
+    const tbody = document.querySelector('#subjects-table tbody');
+
+    function subjectOptionsHtml(course, selected) {
+        const subjects = courseSubjects[course] || [];
+        let html = '<option value="">Select subject</option>';
+        subjects.forEach(subject => {
+            const chosen = selected === subject ? ' selected' : '';
+            html += `<option value="${subject}"${chosen}>${subject}</option>`;
+        });
+        return html;
+    }
+
+    function refreshSyllabusOptions(selectedSyllabus) {
+        const course = courseSelect.value;
+        const syllabi = courseSyllabi[course] || [];
+        syllabusSelect.innerHTML = '<option value="">Select syllabus</option>';
+        syllabi.forEach(s => {
+            const option = document.createElement('option');
+            option.value = s;
+            option.textContent = s;
+            if (selectedSyllabus && selectedSyllabus === s) {
+                option.selected = true;
+            }
+            syllabusSelect.appendChild(option);
+        });
+    }
+
+    function ensureAtLeastOneRow() {
+        if (tbody.children.length === 0) {
+            addRow();
+        }
+    }
+
+    function refreshSubjectRows() {
+        const course = courseSelect.value;
+        const rows = tbody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const select = row.querySelector('select[name="subjects"]');
+            const current = select.value;
+            select.innerHTML = subjectOptionsHtml(course, current);
+            if (!Array.from(select.options).some(o => o.value === current)) {
+                select.value = '';
+            }
+        });
+    }
+
+    function addRow() {
+        const course = courseSelect.value;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>
+                <select name="subjects" required>
+                    ${subjectOptionsHtml(course, '')}
+                </select>
+            </td>
+            <td><input name="marks" type="number" min="0" max="100" required></td>
+            <td><textarea name="remarks" rows="2" placeholder="Teacher remark"></textarea></td>
+        `;
+        tbody.appendChild(tr);
+    }
+
+    studentSelect.addEventListener('change', () => {
+        const selected = studentSelect.options[studentSelect.selectedIndex];
+        const course = selected ? (selected.getAttribute('data-course') || '') : '';
+        const syllabus = selected ? (selected.getAttribute('data-syllabus') || '') : '';
+
+        courseSelect.value = course;
+        refreshSyllabusOptions(syllabus);
+        refreshSubjectRows();
+        ensureAtLeastOneRow();
+    });
+
+    courseSelect.addEventListener('change', () => {
+        refreshSyllabusOptions('');
+        refreshSubjectRows();
+        ensureAtLeastOneRow();
+    });
+
+    refreshSyllabusOptions('');
+    ensureAtLeastOneRow();
+</script>
+</body>
+</html>

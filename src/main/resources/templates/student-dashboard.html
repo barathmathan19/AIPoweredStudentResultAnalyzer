@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Student Dashboard</title>
+    <style>
+        :root {
+            --ink: #232a44;
+            --card: #ffffff;
+            --line: #d8ddf1;
+            --accent: #2f5fd9;
+            --soft: #eef3ff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--ink);
+            background: radial-gradient(circle at top left, #e9efff, #f7f9ff 58%, #edf2ff 100%);
+        }
+
+        .top {
+            background: #232a44;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 22px;
+        }
+
+        .top a {
+            color: #fff;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 9px;
+            padding: 8px 12px;
+        }
+
+        .wrap {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .hero {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 10px 25px rgba(35, 42, 68, 0.07);
+        }
+
+        .hero h2 {
+            margin: 0 0 6px;
+        }
+
+        .meta {
+            color: #4d5780;
+            font-size: 0.9rem;
+            margin: 4px 0 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 15px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: var(--soft);
+            color: var(--accent);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            margin-bottom: 8px;
+        }
+
+        .score {
+            margin: 2px 0 8px;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .lbl {
+            font-size: 0.86rem;
+            color: #525b7a;
+            margin: 0 0 4px;
+        }
+
+        .text {
+            margin: 0;
+            line-height: 1.45;
+        }
+
+        .suggestion {
+            margin: 0;
+            line-height: 1.48;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+<header class="top">
+    <h3>Student Dashboard</h3>
+    <a href="/logout">Logout</a>
+</header>
+
+<main class="wrap">
+    <section class="hero">
+        <h2 th:text="'Welcome, ' + ${student.name}"></h2>
+        <p class="meta" th:text="${'Course: ' + (#strings.isEmpty(student.course) ? 'Not set by teacher' : student.course)}"></p>
+        <p class="meta" th:text="${'Syllabus: ' + (#strings.isEmpty(student.syllabus) ? 'Not set by teacher' : student.syllabus)}"></p>
+        <p>Subject-wise marks, teacher remarks, and detailed AI-generated improvement plans.</p>
+    </section>
+
+    <section class="grid">
+        <article class="card" th:if="${#lists.isEmpty(results)}">
+            <p class="text">No marks have been published yet. Please contact your teacher.</p>
+        </article>
+        <article class="card" th:each="result : ${results}">
+            <span class="tag" th:text="${result.subject}"></span>
+            <p class="score" th:text="${result.marks + '/100'}"></p>
+
+            <p class="lbl">Teacher Remark</p>
+            <p class="text" th:text="${#strings.isEmpty(result.remark) ? 'No remark added.' : result.remark}"></p>
+
+            <p class="lbl" style="margin-top: 10px;">Detailed AI Improvement Plan</p>
+            <p class="suggestion" th:text="${result.suggestion}"></p>
+        </article>
+    </section>
+</main>
+</body>
+</html>

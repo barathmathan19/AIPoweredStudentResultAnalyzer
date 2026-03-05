@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>AI Student Result Analyzer</title>
+    <style>
+        :root {
+            --ink: #132a3b;
+            --accent: #ff7b54;
+            --surface: #f4f7fb;
+            --card: #ffffff;
+            --line: #d6dde5;
+            --ok-bg: #e7f8ee;
+            --ok-ink: #1a7c42;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--ink);
+            background: radial-gradient(circle at top right, #ffe9de 0%, #f5f8fc 45%, #edf3fa 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .shell {
+            width: 100%;
+            max-width: 1020px;
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            background: var(--card);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 16px 40px rgba(19, 42, 59, 0.12);
+        }
+
+        .hero {
+            padding: 42px;
+            background: linear-gradient(135deg, #132a3b, #1e425f);
+            color: #fff;
+        }
+
+        .hero h1 {
+            margin: 0 0 14px;
+            font-size: 2rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            margin: 0;
+            color: #d5e4ef;
+            line-height: 1.55;
+        }
+
+        .form-wrap {
+            padding: 34px 30px;
+            background: var(--surface);
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .panel h2 {
+            margin: 0 0 16px;
+            font-size: 1.3rem;
+        }
+
+        .error {
+            margin: 0 0 14px;
+            color: #ab1f1f;
+            background: #ffe4e4;
+            border: 1px solid #ffc8c8;
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .success {
+            margin: 0 0 14px;
+            color: var(--ok-ink);
+            background: var(--ok-bg);
+            border: 1px solid #bde7cb;
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            margin-bottom: 14px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 11px 12px;
+            font-size: 0.95rem;
+            background: #fff;
+        }
+
+        button {
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            padding: 12px 14px;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.96rem;
+            cursor: pointer;
+        }
+
+        .alt {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 0.92rem;
+        }
+
+        .alt a {
+            color: #1d5fd1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 860px) {
+            .shell { grid-template-columns: 1fr; }
+            .hero { padding: 28px; }
+            .form-wrap { padding: 24px 18px; }
+        }
+    </style>
+</head>
+<body>
+<div class="shell">
+    <section class="hero">
+        <h1>AI Powered Student Result Analyzer</h1>
+        <p>Sign up as teacher or student, then login. Teachers add marks and remarks for signed-up students, and students get AI suggestions.</p>
+    </section>
+
+    <section class="form-wrap">
+        <div class="panel">
+            <h2>Login</h2>
+            <p class="error" th:if="${error != null and !#strings.isEmpty(error)}" th:text="${error}"></p>
+            <p class="success" th:if="${success != null and !#strings.isEmpty(success)}" th:text="${success}"></p>
+
+            <form action="/login" method="post">
+                <label for="role">Role</label>
+                <select id="role" name="role">
+                    <option value="teacher">Teacher</option>
+                    <option value="student">Student</option>
+                </select>
+
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="Enter email" required/>
+
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" placeholder="Enter password" required/>
+
+                <button type="submit">Login</button>
+            </form>
+            <div class="alt">No account? <a href="/signup">Create one</a></div>
+        </div>
+    </section>
+</div>
+</body>
+</html>
