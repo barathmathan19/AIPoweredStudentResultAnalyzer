@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Signup</title>
+    <style>
+        :root {
+            --ink: #17243d;
+            --bg: #eef2ff;
+            --card: #ffffff;
+            --line: #d3dbf2;
+            --accent: #2f5fd9;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--ink);
+            background: radial-gradient(circle at top left, #dfe7ff, #f4f7ff 55%, #e9eefe 100%);
+        }
+
+        .card {
+            width: 100%;
+            max-width: 520px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 14px 30px rgba(34, 53, 96, 0.12);
+        }
+
+        h2 { margin: 0 0 12px; }
+
+        .error {
+            margin: 0 0 14px;
+            color: #ab1f1f;
+            background: #ffe4e4;
+            border: 1px solid #ffc8c8;
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            margin-bottom: 14px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 11px 12px;
+            font-size: 0.95rem;
+        }
+
+        button {
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            padding: 12px;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .alt {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 0.92rem;
+        }
+
+        .alt a {
+            color: #1d53be;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<section class="card">
+    <h2>Create Account</h2>
+    <p class="error" th:if="${error != null and !#strings.isEmpty(error)}" th:text="${error}"></p>
+
+    <form action="/signup" method="post">
+        <label for="role">Role</label>
+        <select id="role" name="role">
+            <option value="teacher">Teacher</option>
+            <option value="student">Student</option>
+        </select>
+
+        <label for="fullName">Full Name</label>
+        <input id="fullName" name="fullName" required/>
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required/>
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" minlength="6" required/>
+
+        <button type="submit">Sign Up</button>
+    </form>
+
+    <div class="alt">Already have an account? <a href="/">Login</a></div>
+</section>
+</body>
+</html>
