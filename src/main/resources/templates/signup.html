@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Signup</title>
     <style>
+        /* existing styles (unchanged) */
         :root {
             --ink: #17243d;
             --bg: #eef2ff;
@@ -93,12 +94,7 @@
     <p class="error" th:if="${error != null and !#strings.isEmpty(error)}" th:text="${error}"></p>
 
     <form action="/signup" method="post">
-        <label for="role">Role</label>
-        <select id="role" name="role">
-            <option value="teacher">Teacher</option>
-            <option value="student">Student</option>
-        </select>
-
+        <!-- role selection removed: everyone signs up as STUDENT by default -->
         <label for="fullName">Full Name</label>
         <input id="fullName" name="fullName" required/>
 
