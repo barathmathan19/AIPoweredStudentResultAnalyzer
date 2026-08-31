@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>AI Student Result Analyzer</title>
     <style>
+        /* existing styles (unchanged) */
         :root {
             --ink: #132a3b;
             --accent: #ff7b54;
@@ -145,7 +146,7 @@
 <div class="shell">
     <section class="hero">
         <h1>AI Powered Student Result Analyzer</h1>
-        <p>Sign up as teacher or student, then login. Teachers add marks and remarks for signed-up students, and students get AI suggestions.</p>
+        <p>Sign up and then login. Teachers can be a special role assigned later; signup creates a student account by default.</p>
     </section>
 
     <section class="form-wrap">
@@ -155,12 +156,7 @@
             <p class="success" th:if="${success != null and !#strings.isEmpty(success)}" th:text="${success}"></p>
 
             <form action="/login" method="post">
-                <label for="role">Role</label>
-                <select id="role" name="role">
-                    <option value="teacher">Teacher</option>
-                    <option value="student">Student</option>
-                </select>
-
+                <!-- role selection removed -->
                 <label for="email">Email</label>
                 <input id="email" name="email" type="email" placeholder="Enter email" required/>
 

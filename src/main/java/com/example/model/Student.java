@@ -32,11 +32,9 @@ public class Student {
     @Column(name = "syllabus")
     private String syllabus;
 
-    // Backward compatibility for existing DB rows created before user-account split.
     @Column(name = "email")
     private String legacyEmail;
 
-    // Backward compatibility for existing DB rows created before user-account split.
     @Column(name = "password")
     private String legacyPassword;
 

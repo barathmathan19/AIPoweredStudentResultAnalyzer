@@ -41,9 +41,9 @@ public class AuthController {
         return "signup";
     }
 
+    // Signup now creates a STUDENT account by default (anyone can create an account)
     @PostMapping("/signup")
     public String signup(
-            @RequestParam String role,
             @RequestParam String fullName,
             @RequestParam String email,
             @RequestParam String password,
@@ -51,12 +51,9 @@ public class AuthController {
             Model model
     ) {
         try {
-            UserRole userRole = parseRole(role);
-            if (userRole == UserRole.TEACHER) {
-                authService.signupTeacher(fullName, email, password);
-            } else {
-                authService.signupStudent(fullName, email, password);
-            }
+            // always create STUDENT accounts here
+            authService.signupStudent(fullName, email, password);
+
             redirectAttributes.addFlashAttribute("success", "Signup successful. Please login.");
             return "redirect:/";
         } catch (IllegalArgumentException ex) {
@@ -68,9 +65,9 @@ public class AuthController {
         }
     }
 
+    // Login requires an existing account; redirect based on stored role but no separate teacher-login form
     @PostMapping("/login")
     public String login(
-            @RequestParam(required = false) String role,
             @RequestParam String email,
             @RequestParam String password,
             HttpSession session,
@@ -86,26 +83,18 @@ public class AuthController {
         session.setAttribute("userId", user.get().getId());
         session.setAttribute("role", userRole.name());
 
+        // Always redirect to student dashboard for normal users; if a teacher account exists you can still navigate
+        // (this preserves existing role behavior but the login form no longer asks for role)
         if (userRole == UserRole.STUDENT) {
             return "redirect:/student/dashboard";
         }
 
-        return "redirect:/teacher/dashboard";
+        return "redirect:/student/dashboard";
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/";
-    }
-
-    private UserRole parseRole(String role) {
-        if ("teacher".equalsIgnoreCase(role)) {
-            return UserRole.TEACHER;
-        }
-        if ("student".equalsIgnoreCase(role)) {
-            return UserRole.STUDENT;
-        }
-        throw new IllegalArgumentException("Invalid role");
     }
 }

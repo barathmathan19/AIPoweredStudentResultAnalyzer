@@ -63,15 +63,71 @@ src/main/java/com/example/
 git clone https://github.com/barathmathan19/AIPoweredStudentResultAnalyzer.git
 cd AIPoweredStudentResultAnalyzer
 
-# Add your Gemini API key in application.properties
-# gemini.api.key=YOUR_API_KEY_HERE
+# Recommended: create a .env file from the example and export it before running
+# cp .env.example .env
+# source .env   # (Linux / macOS)
+
+# If using Docker for Postgres + Redis, start them first (see Docker commands below)
 
 mvn spring-boot:run
 ```
 
 Visit `http://localhost:8080`
 
-> H2 in-memory database is used — no external database setup needed.
+Health check: GET /health returns a simple JSON payload {"status":"ok","timestamp":"..."}.
+
+---
+
+### Docker (Postgres + Redis) - quick start
+
+Run Postgres and Redis locally using Docker (example):
+
+```bash
+# Start Postgres
+docker run -d --name aipg_postgres \
+  -e POSTGRES_USER=appuser \
+  -e POSTGRES_PASSWORD=pass \
+  -e POSTGRES_DB=studentdb \
+  -p 5432:5432 postgres:15
+
+# Start Redis
+docker run -d --name aipg_redis -p 6379:6379 redis:7
+```
+
+Wait a few seconds for both containers to be healthy.
+
+### Example .env file
+
+Create a file named `.env` at the project root (do NOT commit your real .env to Git). Use `.env.example` as a template. Example values:
+
+```env
+# Postgres
+JDBC_DATABASE_URL=jdbc:postgresql://localhost:5432/studentdb
+JDBC_DATABASE_USERNAME=appuser
+JDBC_DATABASE_PASSWORD=pass
+JDBC_DRIVER_CLASS=org.postgresql.Driver
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+# REDIS_PASSWORD=
+
+# Gemini API Key (optional)
+GEMINI_API_KEY=
+```
+
+Load the env (Linux/macOS): `source .env` then run `mvn spring-boot:run`.
+
+On Windows PowerShell:
+
+```powershell
+Get-Content .env | ForEach-Object { $p = ($_ -split '=',2); if ($p.Length -eq 2) { Set-Item -Path Env:$($p[0]) -Value $p[1] } }
+mvn spring-boot:run
+```
+
+---
+
+If you'd like, I can add a small bash script to bring up Docker and start the app using the .env file.
 
 ---
 

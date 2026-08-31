@@ -6,7 +6,6 @@ import com.google.gson.JsonParser;
 public class ResponseParser {
 
     public static String extractText(String json) {
-
         JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
 
         return obj
